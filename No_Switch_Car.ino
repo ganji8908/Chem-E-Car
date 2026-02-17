@@ -1,5 +1,5 @@
- /*  EVERYTHING BUT THE SWITCH*/
- /*LUMINOL IS JUST THE PUMP*/
+/* EVERYTHING BUT THE SWITCH*/
+/*LUMINOL IS JUST THE PUMP*/
 
 
 #include <Adafruit_AS7341.h>
@@ -56,6 +56,7 @@ bool setupDelay=false;   //used to allow the car 8s only at the start of the set
 void setup()
 {
   pinMode(pump_sleep, OUTPUT); 
+  pinMode(car_sleep, OUTPUT); // STEVEN: Added to match switch car setup and wake up motor driver
    
   pinMode(motor_pin, OUTPUT);
   pinMode(unused_pin, OUTPUT);
@@ -80,6 +81,11 @@ void setup()
 
 void loop()
 {
+  // STEVEN: If stoppingFlag is true, we have hit the threshold and should not run the loop anymore.
+  if (stoppingFlag) {
+    return;
+  }
+
   if (!as7341.readAllChannels()) {
     Serial.println("Error reading all channels!");
     return;
@@ -100,18 +106,19 @@ void loop()
 //STEVEN: IMPORTANT NOTE: CAR STARTS MOVING THE MOMENT YOU TURN THE CAR ON. 
 
 
-    Serial.print("Starting new reaction protocol:\t"); Serial.print("MOTOR: ON\t"); Serial.println("Linear Actuator: Compressing...");
-    // Start motor
-    digitalWrite(pump_sleep, HIGH);   //STEVEN: set the sleep pin to high, to allow H-Bridge of the Motor driver to output higher voltage to the pump motor
-    digitalWrite(motor_pin, HIGH);  
-    digitalWrite(unused_pin, LOW);
-
     //STEVEN: 8s THIS DELAY IS ADDED SO THAT WE CAN AVOID SENSING THE FIRST ZERO FROM THE STOPPING RHO REACTION, 
     //AND ONLY READ THE SECOND ZERO READING FROM THE REACTION.  
     //Car is only given 8s at the start for intial setup, after that, the 
-    Serial.println("IN the 8s delay time period....");
     if(!setupDelay)
     {
+      Serial.print("Starting new reaction protocol:\t"); Serial.print("MOTOR: ON\t"); Serial.println("Linear Actuator: Compressing...");
+      // Start motor
+      digitalWrite(pump_sleep, HIGH);   //STEVEN: set the sleep pin to high, to allow H-Bridge of the Motor driver to output higher voltage to the pump motor
+      digitalWrite(car_sleep, HIGH);    //STEVEN: Wake up the motor driver
+      digitalWrite(motor_pin, HIGH);  
+      digitalWrite(unused_pin, LOW);
+
+      Serial.println("IN the 8s delay time period....");
       unsigned long reactionStart=millis(); //holds the startTime of the reaction (specifically holds time since Arduino program started, but placing this in a variable helps us save the time.
       while (millis()-reactionStart<8000)
       {
@@ -138,10 +145,10 @@ void loop()
       if (measured_intensity==threshold_intensity) {
         Serial.print("Measured intensity= threshold, stop the Car motor");
         digitalWrite(pump_sleep, LOW); //cut off motor driver Power supply
+        digitalWrite(car_sleep, LOW);  //Put driver to sleep
         digitalWrite(motor_pin, LOW); 
+        stoppingFlag = true;           //STEVEN: Set flag to true so the car never restarts
         //waitForReswitch();  // hold infinite while loop until switch is repulled
         }   
 
 }
-
-
