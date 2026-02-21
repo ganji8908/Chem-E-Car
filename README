@@ -1,3 +1,16 @@
+#Changes from Week 7
+
+LUMNIOL CAR with Perstalic pump
+-Added missing pins for the Lumninol car code for the pump. Had a successful run with the Rho Team. Pump motors worked as expected; the car motor started right off the bat (not final car logic, but functional) and stopped when the luminosity reached 0. 
+-Trouble implementing Ethan's (stopping Rho's) car movement logic, need more testing. 
+-Last few runs this week, the PUMP_SLEEP pin for the  peristaltic pump randomly goes low when the power for the MCU is switched from the Laptop to the external power. 
+
+EPSILON CAR
+-Updated code to have the linear actuator start with compressing itself from the extended position, and back to the extended position for the car's final movement, after discussion with Ethan on Thursday. 
+Steven Kuzhipala
+
+
+
 # (Changes 2/14/26)-Final Luminol Car Code
 
 - Added switch functionality and updated motion for the car after meeting with Ethan from Rho Team. 
