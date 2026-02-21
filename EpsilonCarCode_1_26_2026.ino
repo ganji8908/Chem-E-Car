@@ -161,9 +161,9 @@ void loop()
       digitalWrite(motor_pin, HIGH);
       digitalWrite(unused_pin, LOW);
 
-      // Push down Linear Actuator
-      digitalWrite(linear_actuator_IN1, LOW);
-      digitalWrite(linear_actuator_IN2, HIGH);
+      // Push up Linear Actuator
+      digitalWrite(linear_actuator_IN1, HIGH);
+      digitalWrite(linear_actuator_IN2, LOW);
       //Now the reaction has started, BUT we need to avoid the first 0
   
       //STEVEN: 8s THIS DELAY IS ADDED SO THAT WE CAN AVOID SENSING THE FIRST ZERO FROM THE STOPPING RHO REACTION, 
@@ -213,12 +213,13 @@ void loop()
       digitalWrite(motor_pin, LOW);
       digitalWrite(unused_pin, LOW);
 
-      // Extend linear actuator
+      // Push down linear actuator
       Serial.println("Switch OFF");
-      digitalWrite(linear_actuator_IN1, HIGH);
-      digitalWrite(linear_actuator_IN2, LOW);
+      digitalWrite(linear_actuator_IN1, LOW);
+      digitalWrite(linear_actuator_IN2, HIGH);
       break;
   }
 }
+
 
 
