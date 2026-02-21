@@ -142,6 +142,9 @@ void loop()
   // Uncommenting the line below will tell you the integration time in milliseconds
   // regular_print(as7341.getTINT());
 
+  //Setting up linear actuator to start of with extended position
+  digitalWrite(linear_actuator_IN1, HIGH);
+  digitalWrite(linear_actuator_IN2, LOW);
   //STEVEN: CHANGED THE CHANNEL TO DETECT THE BLUE WAVELENGTH OF LIGHT, BASED OF THIS YEAR'S REACTION
   measured_intensity = as7341.getChannel(AS7341_CHANNEL_480nm_F6);
   switch_state = digitalRead(switch_pin);
@@ -161,9 +164,9 @@ void loop()
       digitalWrite(motor_pin, HIGH);
       digitalWrite(unused_pin, LOW);
 
-      // Push up Linear Actuator
-      digitalWrite(linear_actuator_IN1, HIGH);
-      digitalWrite(linear_actuator_IN2, LOW);
+      // Push down Linear Actuator
+      digitalWrite(linear_actuator_IN1, LOW);
+      digitalWrite(linear_actuator_IN2, HIGH);
       //Now the reaction has started, BUT we need to avoid the first 0
   
       //STEVEN: 8s THIS DELAY IS ADDED SO THAT WE CAN AVOID SENSING THE FIRST ZERO FROM THE STOPPING RHO REACTION, 
@@ -213,13 +216,14 @@ void loop()
       digitalWrite(motor_pin, LOW);
       digitalWrite(unused_pin, LOW);
 
-      // Push down linear actuator
+      // Push up linear actuator
       Serial.println("Switch OFF");
-      digitalWrite(linear_actuator_IN1, LOW);
-      digitalWrite(linear_actuator_IN2, HIGH);
+      digitalWrite(linear_actuator_IN1, HIGH);
+      digitalWrite(linear_actuator_IN2, LOW);
       break;
   }
 }
+
 
 
 
