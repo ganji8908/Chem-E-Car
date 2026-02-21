@@ -10,6 +10,8 @@ Adafruit_AS7341 as7341;
 #define motor_pin 3
 #define unused_pin 4
 #define pump_sleep 7     
+#define IN1 5
+#define IN2 6
 //PUMP_SLEEP required to be driven HIGH to allow the motor driver for the car to work. 
 #define car_sleep 8 
 
@@ -60,6 +62,8 @@ void setup()
    
   pinMode(motor_pin, OUTPUT);
   pinMode(unused_pin, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
   //pinMode(switch_pin, INPUT_PULLUP);
   Serial.begin(115200);
 
