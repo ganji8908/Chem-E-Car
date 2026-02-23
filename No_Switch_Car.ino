@@ -19,25 +19,6 @@ Adafruit_AS7341 as7341;
 #define ATIME_VAL 50 
 
 //DO NOT USE A4(SDA), A5(SDL)  pins, THEY ARE LEFT FOR THE ADAFRUIT SENSOR ONLY. 
-
-/* Refer to "Section 5: Export Variable Values to .csv File" for more information
-Change "csvLogState" to true (1) or false (0) depending on whether or not you want to log "rawValue vs. time" data to a csv file
-true (1) - enable csv logging
-false (0) - disable csv logging, do regular printing instead
-*/
-#define csvLogState 0
-#if csvLogState
-#define csv_print(...) Serial.print(__VA_ARGS__)
-#define csv_println(...) Serial.println(__VA_ARGS__)
-#define regular_print(...)
-#define regular_println(...)
-#else
-#define csv_print(...)
-#define csv_println(...)
-#define regular_print(...) Serial.print(__VA_ARGS__)
-#define regular_println(...) Serial.println(__VA_ARGS__)
-#endif
-
 unsigned int measured_intensity;
 unsigned int threshold_intensity = 0; // Stopping team, change this depending on your experiment results; 
                                       //STEVEN : Changed this to 0 based of testing with the Rho Team. 
