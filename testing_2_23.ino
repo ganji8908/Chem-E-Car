@@ -26,8 +26,9 @@ void setup()
 {
   // 1. ALWAYS START SERIAL FIRST
   Serial.begin(115200);
-  while (!Serial) delay(10); 
-  Serial.println("--- System Booting ---");
+ //remove comment to have the serial monitor, if you are going to have the serial monitor output the readings. 
+ /* while (!Serial) delay(10); 
+  Serial.println("--- System Booting ---"); */
 
   pinMode(pump_sleep, OUTPUT); 
   pinMode(car_sleep, OUTPUT); 
@@ -64,13 +65,13 @@ void loop()
     Serial.print("PUMP_SLEEP reading: "); Serial.println(digitalRead(pump_sleep));
     digitalWrite(car_sleep, HIGH);     //only motor sleep pin is high, not the motor pin
     
-    // Push the LA down, it starts of extended
+    // Push the LA down, it starts off extended
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, HIGH);
     digitalWrite(unused_pin, LOW); 
 
     unsigned long reactionStart = millis(); 
-    while (millis() - reactionStart < 8000)
+    while (millis() - reactionStart < 8500)   //STOPPING ROW CAN CHANGE THIS FROM 8.5 Seconds to whatever delay time they need. 
     {
       Serial.println("Waiting 8s for reaction to stabilize.");
       Serial.print("Motor pin reading: "); Serial.println(digitalRead(motor_pin));
@@ -100,5 +101,5 @@ void loop()
   }
 
   
-  delay(50); // Fast response time
+  delay(50); // Fast response time, can be removed during final testing and competition.  
 }
