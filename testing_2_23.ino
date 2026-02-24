@@ -9,8 +9,8 @@ Adafruit_AS7341 as7341;
 #define IN2 6
 #define car_sleep 8  
 
-#define ASTEP_VAL 2999
-#define ATIME_VAL 50 
+#define ASTEP_VAL 3999
+#define ATIME_VAL 100 
 
 unsigned int measured_intensity;
 unsigned int threshold_intensity = 0; 
