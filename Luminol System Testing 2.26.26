@@ -1,0 +1,105 @@
+#include <Adafruit_AS7341.h>
+
+Adafruit_AS7341 as7341;
+
+#define motor_pin 3
+#define unused_pin 4
+#define pump_sleep 7     
+#define IN1 5
+#define IN2 6
+#define car_sleep 8  
+
+#define ASTEP_VAL 3999
+#define ATIME_VAL 100 
+
+unsigned int measured_intensity;
+unsigned int threshold_intensity = 0; 
+ 
+int switch_state;
+unsigned long switchOnTime;
+unsigned long currentTime;
+int flag = 1; 
+bool stoppingFlag = 0;  
+bool setupDelay = false;   
+
+void setup()
+{
+  // 1. ALWAYS START SERIAL FIRST
+  Serial.begin(115200);
+ //remove comment to have the serial monitor, if you are going to have the serial monitor output the readings. 
+ /* while (!Serial) delay(10); 
+  Serial.println("--- System Booting ---"); */
+
+  pinMode(pump_sleep, OUTPUT); 
+  pinMode(car_sleep, OUTPUT); 
+  pinMode(motor_pin, OUTPUT);
+  pinMode(unused_pin, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+
+  // 2. SENSOR INITIALIZATION
+  if (!as7341.begin()) {
+    Serial.println("FATAL ERROR: Could not find AS7341 sensor! Check SDA/SCL wiring.");
+    while (1) { delay(10); }
+  }
+
+  as7341.setATIME(ATIME_VAL); 
+  as7341.setASTEP(ASTEP_VAL); 
+  as7341.setGain(AS7341_GAIN_512X); 
+  
+  Serial.println("Setup done! Sensor Online.");
+}
+
+void loop()
+{
+  
+  if (stoppingFlag) return; //CAR STOPS, IT NEVER STARTS AGAIN
+
+  if (!as7341.readAllChannels()) return;
+
+  //SETUP DELAY BLOCK, goes here only once, despite having startig from void loop() again 
+  if(!setupDelay)
+  {
+    Serial.println("Starting Pump Protocol...");
+    digitalWrite(pump_sleep, HIGH);  
+    Serial.print("PUMP_SLEEP reading: "); Serial.println(digitalRead(pump_sleep));
+    digitalWrite(car_sleep, HIGH);     //only motor sleep pin is high, not the motor pin
+    
+    // Push the LA down, it starts off extended
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(unused_pin, LOW); 
+
+    unsigned long reactionStart = millis(); 
+    while (millis() - reactionStart < 8500)   //STOPPING ROW CAN CHANGE THIS FROM 8.5 Seconds to whatever delay time they need. 
+    {
+      Serial.println("Waiting 8s for reaction to stabilize.");
+      Serial.print("Motor pin reading: "); Serial.println(digitalRead(motor_pin));
+      delay(1000); 
+    }
+    setupDelay = true; 
+    Serial.println("Setup Delay Complete. Beginning Sensor-Based Driving.");
+  }          
+
+  // Re-read sensor to get the most current light value
+  as7341.readAllChannels();  
+  measured_intensity = as7341.getChannel(AS7341_CHANNEL_480nm_F3);  
+  Serial.print("Motor pin reading: "); Serial.println(digitalRead(motor_pin));
+  Serial.print("Intensity: "); Serial.println(measured_intensity); 
+  if (measured_intensity > threshold_intensity) {
+    digitalWrite(motor_pin, HIGH); 
+    Serial.print("Motor pin reading: "); Serial.println(digitalRead(motor_pin));
+  } 
+  else {
+    // If it hits 0 or the threshold, stop everything immediately
+    digitalWrite(motor_pin, LOW);
+    digitalWrite(pump_sleep, LOW); 
+    digitalWrite(car_sleep, LOW);  
+    stoppingFlag = true; 
+    Serial.println("!!! THRESHOLD REACHED!");
+    Serial.print("Motor pin reading: "); Serial.println(digitalRead(motor_pin));
+  }
+
+  
+  delay(50); // Fast response time, can be removed during final testing and competition.  
+}
