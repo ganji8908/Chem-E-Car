@@ -1,12 +1,9 @@
 /*
-Code last updated: 4/25/2025 6:10 PM
-Recent changes:
-  - Added insertionSort() function for sorting arrays for median filter
-  - Added in median filter for filtering out noise from conductivity sensor
-  - Tried fixing a bug regarding updating the analog array
-  - Fixed direction in which linear actuator moves
-  - Tried fixing the median filter again
-  - Attempted another fix again that involves using a temporary array
+Code last updated: 3/1/2026
+  - updated calibration - threshold difference to be set by stopping team
+      - compares filterValue - initialValue to threshold difference
+      - now prints out difference for each reading
+  - check linear actuator position (extend/retract)
 ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗
 ❗❗❗ NOTICE TO EVERYONE: BEFORE UPLOADING UPDATED CODE FILES TO THE GOOGLE DRIVE, UPDATE THE CHANGELOG HERE ❗❗❗
 ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗
@@ -219,3 +216,4 @@ void loop()
     calibrationSum = 0;
   }
 }
+
