@@ -1,9 +1,8 @@
 /*
-Code last updated: 3/1/2026
+Code last updated: 3/3/2026
   - updated calibration - threshold difference to be set by stopping team
       - compares filterValue - initialValue to threshold difference
       - now prints out difference for each reading
-  - check linear actuator position (extend/retract)
 ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗
 ❗❗❗ NOTICE TO EVERYONE: BEFORE UPLOADING UPDATED CODE FILES TO THE GOOGLE DRIVE, UPDATE THE CHANGELOG HERE ❗❗❗
 ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗
@@ -43,7 +42,7 @@ int flag = 0; // 1 = switch ON, 0 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = -1;
+int threshold = -1; //change based on stopping team measured value
 int val;
 
 bool calibrated = false;
@@ -52,7 +51,6 @@ int calibrationReadings[10];
 int calibrationSum = 0;
 //int analogArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // n = 10
 int n = 10;
-threshold = __ -> replace with actual value
 
 void calibrateECScale() {  //probe
   Serial.println("Calibrating EC sensor...");
@@ -66,7 +64,6 @@ void calibrateECScale() {  //probe
   }
 
   initialValue = calibrationSum / 10;
-  //threshold = __ -> replace with actual value
   //threshold = initialValue - 250;
 
   Serial.print("Calibration complete. Initial value: ");
@@ -114,7 +111,7 @@ void updateAnalogArray(int arr[]) {
     arr[i] = arr[i+1];
     tempArr[i] = arr[i]; //each value moves one space left
   }
-  rawValue = (uint32_t)analogRead(EC_pin)* 5000/1024; //check?? - switch to 3.3??
+  rawValue = (uint32_t)analogRead(EC_pin)* 5000/1024; //reads voltage from probe (adjusted to 5V range)
   arr[n-1] = rawValue; //last value = latest reading
   tempArr[n-1] = arr[n-1]; //tempArr = arr
 
@@ -143,13 +140,12 @@ void loop()
   //filterValue = medianFilter(analogArray);
 
   if (switch_state == 0) // Switch ON
-  {
-    
+  { 
     if (!calibrated) {
       calibrateECScale();  // one-time calibration to find initialValue
     }
     
-    // Retract linear actuator - check this!!
+    // Retract linear actuator 
     digitalWrite(linear_actuator_IN1, LOW);
     digitalWrite(linear_actuator_IN2, HIGH);
 
@@ -211,9 +207,8 @@ void loop()
     flag = 0;
     calibrated = false;
     finalPrintFlag = false;
-    threshold = -1;
+    //threshold = -1;
     initialValue = -1;
     calibrationSum = 0;
   }
 }
-
