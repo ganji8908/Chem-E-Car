@@ -1,5 +1,5 @@
 /*
-Code last updated: 3/3/2026
+Code last updated: 3/1/2026
   - updated calibration - threshold difference to be set by stopping team
       - compares filterValue - initialValue to threshold difference
       - now prints out difference for each reading
@@ -9,7 +9,6 @@ Code last updated: 3/3/2026
 */
 
 #include <DFRobot_ECPRO.h>
-//#include <EEPROM.h>
 
 //pin definitions
 #define EC_pin A1
@@ -38,18 +37,18 @@ int switch_state;
 unsigned long switchOnTime;
 unsigned long currentTime;
 unsigned long finalTime = 0;
-int flag = 0; // 1 = switch ON, 0 = switch OFF
+int flag = 1; // 0 = switch ON, 1 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = -1; //change based on stopping team measured value
+int threshold = -1; //change based on stopping team measured threshold difference
 int val;
 
 bool calibrated = false;
 bool finalPrintFlag = false;
 int calibrationReadings[10];
 int calibrationSum = 0;
-//int analogArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // n = 10
+int analogArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // n = 10
 int n = 10;
 
 void calibrateECScale() {  //probe
@@ -82,7 +81,7 @@ void insertionSort(int arr[]) { // this is actually tempArr[]
 
     while (j >= 0 && arr[j] > key) {
       arr[j+1] = arr[j];
-      j = j -1;
+      j = j - 1;
     }
 
     arr[j + 1] = key;
@@ -134,10 +133,8 @@ void setup()
 
 void loop()
 {
-  //rawValue = analogRead(EC_pin);
-  switch_state = digitalRead(switch_pin); //switch on/off
+  switch_state = digitalRead(switch_pin); // stores switch position
   updateAnalogArray(analogArray); // analogRead(EC_pin) is in here
-  //filterValue = medianFilter(analogArray);
 
   if (switch_state == 0) // Switch ON
   { 
@@ -149,9 +146,9 @@ void loop()
     digitalWrite(linear_actuator_IN1, LOW);
     digitalWrite(linear_actuator_IN2, HIGH);
 
-    if (flag == 0) {
+    if (flag == 1) { 
       switchOnTime = millis();
-      flag = 1;
+      flag = 0;
     }
 
     currentTime = millis() - switchOnTime;
@@ -163,10 +160,10 @@ void loop()
 
         regular_println("Threshold passed.");
         regular_print(" Initial Value: "); regular_print(initialValue);
+        regular_print(" Difference (filterValue - InitialValue): "); regular_print(val); //difference between filtered value and initial value (being compared to threshold difference)
         regular_print(" Threshold: "); regular_print(threshold);
         regular_print(" Analog Value: "); regular_print(rawValue);
         regular_print(" Filter Value: "); regular_print(filterValue);
-        regular_print(" Difference (filterValue - InitialValue): "); regular_print(val); //difference between filtered value and initial value (being compared to threshold difference)
         regular_print(" Final Time: "); regular_println(finalTime);
 
         csv_print(finalTime); csv_print(","); csv_print(rawValue); csv_print('\n');
@@ -200,14 +197,13 @@ void loop()
     regular_print(filterValue);
     regular_println(" Switch: OFF ");
 
-    // Extend linear actuator - check!!
+    // Extend linear actuator 
     digitalWrite(linear_actuator_IN1, HIGH);
     digitalWrite(linear_actuator_IN2, LOW);
 
-    flag = 0;
+    flag = 1;
     calibrated = false;
     finalPrintFlag = false;
-    //threshold = -1;
     initialValue = -1;
     calibrationSum = 0;
   }
