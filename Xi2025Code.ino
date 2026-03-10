@@ -112,7 +112,7 @@ void updateAnalogArray(int arr[]) {
     arr[i] = arr[i+1];
     tempArr[i] = arr[i]; //each value moves one space left
   }
-  rawValue = (uint32_t)analogRead(EC_pin)* 3300/1024; //check??
+  rawValue = (uint32_t)analogRead(EC_pin)* 5000/1024; //check??
   arr[n-1] = rawValue; //last value = latest reading
   tempArr[n-1] = arr[n-1]; //tempArr = arr
 
