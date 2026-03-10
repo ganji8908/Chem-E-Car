@@ -41,11 +41,10 @@ int flag = 1; // 0 = switch ON, 1 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = -1; //change based on stopping team measured threshold difference
-int val;
+int threshold = 100; //change based on stopping team measured threshold difference
+int val = 0;
 
 bool calibrated = false;
-bool finalPrintFlag = false;
 int calibrationReadings[10];
 int calibrationSum = 0;
 int analogArray[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // n = 10
@@ -107,8 +106,8 @@ void updateAnalogArray(int arr[]) {
   int tempArr[10];
 
   for (int i = 0; i < n - 1; i++) {
-    arr[i] = arr[i+1];
-    tempArr[i] = arr[i]; //each value moves one space left
+    arr[i] = arr[i+1];    //each value moves one space left
+    tempArr[i] = arr[i];  //tempArr = arr
   }
   rawValue = (uint32_t)analogRead(EC_pin)* 5000/1024; //reads voltage from probe (adjusted to 5V range)
   arr[n-1] = rawValue; //last value = latest reading
@@ -153,7 +152,6 @@ void loop()
 
     currentTime = millis() - switchOnTime;
 
-    if (!finalPrintFlag) {
       if (val >= threshold) {
         digitalWrite(motor_pin, LOW);  // Stop motor
         finalTime = currentTime;
@@ -167,7 +165,6 @@ void loop()
         regular_print(" Final Time: "); regular_println(finalTime);
 
         csv_print(finalTime); csv_print(","); csv_print(rawValue); csv_print('\n');
-        finalPrintFlag = true;  // ✅ Prevents further processing
       } else {
         digitalWrite(motor_pin, HIGH); // Run motor
 
@@ -183,10 +180,6 @@ void loop()
 
         csv_print(currentTime); csv_print(","); csv_print(filterValue); csv_print('\n');
       }
-    }
-    else {
-      // ✅ Ensure motor stays off and suppress all prints
-      digitalWrite(motor_pin, LOW);
     }
   }
   else if (switch_state == 1) // Switch OFF
@@ -206,5 +199,6 @@ void loop()
     finalPrintFlag = false;
     initialValue = -1;
     calibrationSum = 0;
+    val = 0;
   }
 }
