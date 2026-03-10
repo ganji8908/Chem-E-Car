@@ -65,7 +65,7 @@ void calibrateECScale() {  //probe
 
   initialValue = calibrationSum / 10;
   //threshold = __ -> replace with actual value
-  //threshold = initialValue - 250;
+  threshold = initialValue - 250;
 
   Serial.print("Calibration complete. Initial value: ");
   Serial.print(initialValue);
