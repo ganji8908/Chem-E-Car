@@ -181,7 +181,6 @@ void loop()
         csv_print(currentTime); csv_print(","); csv_print(filterValue); csv_print('\n');
       }
     }
-  }
   else if (switch_state == 1) // Switch OFF
   {
     digitalWrite(motor_pin, LOW);
@@ -202,3 +201,4 @@ void loop()
     val = 0;
   }
 }
+
