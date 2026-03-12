@@ -1,5 +1,5 @@
 /*
-Code last updated: 3/1/2026
+Code last updated: 3/12/2026
   - updated calibration - threshold difference to be set by stopping team
       - compares filterValue - initialValue to threshold difference
       - now prints out difference for each reading
@@ -41,7 +41,7 @@ int flag = 1; // 0 = switch ON, 1 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = 100; //change based on stopping team measured threshold difference
+int threshold = 120; //change based on stopping team measured threshold difference (around 50-200 range)
 int val = 0;
 
 bool calibrated = false;
@@ -180,7 +180,8 @@ void loop()
 
         csv_print(currentTime); csv_print(","); csv_print(filterValue); csv_print('\n');
       }
-    }
+    
+  }
   else if (switch_state == 1) // Switch OFF
   {
     digitalWrite(motor_pin, LOW);
@@ -195,10 +196,8 @@ void loop()
 
     flag = 1;
     calibrated = false;
-    finalPrintFlag = false;
     initialValue = -1;
     calibrationSum = 0;
     val = 0;
   }
 }
-
