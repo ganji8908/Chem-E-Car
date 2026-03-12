@@ -122,7 +122,7 @@ void updateAnalogArray(int arr[]) {
 
 void setup()
 {
-  analogReference(EXTERNAL); //set Vref to 3.3V for ADC (connect wire from AREF pin to 3.3 V pin)
+  //analogReference(EXTERNAL); //set Vref to 3.3V for ADC (connect wire from AREF pin to 3.3 V pin)
   pinMode(linear_actuator_IN1, OUTPUT);
   pinMode(linear_actuator_IN2, OUTPUT);
   pinMode(fan_pin, OUTPUT);
