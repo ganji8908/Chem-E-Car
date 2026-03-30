@@ -116,7 +116,7 @@ void updateAnalogArray(int arr[]) {
   tempArr[n-1] = arr[n-1]; //tempArr = arr
 
   filterValue = medianFilter(tempArr); // update filterValue - filters out noise
-  val = filterValue - initialValue;
+  val = filterValue - initialValue;    //difference between new median value, and the mean of the first 10 readings.
 
   conductivity = ec.getEC_us_cm(rawValue);
 }
