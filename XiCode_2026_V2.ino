@@ -17,6 +17,8 @@ DFRobot_ECPRO ec;
 #define switch_pin 9 //to turn on car
 #define motor_pin 3
 #define motor_unused_pin 4
+#define MCU8 2
+#define MCU7 7 
 #define linear_actuator_IN1 5
 #define linear_actuator_IN2 6
 
@@ -43,7 +45,7 @@ int flag = 1; // 0 = switch ON, 1 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = 20; //change based on stopping team measured threshold difference (around 50-200 range)
+int threshold = 10000; //change to 20 later
 int val = 0;
 float conductivity;
 bool calibrated = false;
@@ -131,10 +133,12 @@ void setup()
   pinMode(motor_pin, OUTPUT);
   pinMode(motor_unused_pin, OUTPUT);
   pinMode(switch_pin, INPUT_PULLUP);
+  pinMode(MCU7,OUTPUT);
+  pinMode(MCU8,OUTPUT);
+
   Serial.begin(115200);
 
   digitalWrite(fan_pin, HIGH); // Fan always on
-  digitalWrite(motor_unused_pin, LOW);
 }
 
 void loop()
@@ -149,9 +153,9 @@ void loop()
     }
     
     // Retract linear actuator 
+    digitalWrite(MCU7, HIGH);
     digitalWrite(linear_actuator_IN1, LOW);
     digitalWrite(linear_actuator_IN2, HIGH);
-
     if (flag == 1) { 
       switchOnTime = millis();
       flag = 0;
@@ -161,6 +165,8 @@ void loop()
     if (!finalPrintFlag)
       if (val >= threshold) {
         digitalWrite(motor_pin, LOW);  // Stop motor
+        digitalWrite(motor_unused_pin, LOW);
+        digitalWrite(MCU8, LOW);
         finalTime = currentTime;
 
         regular_println("Threshold passed."); 
@@ -175,6 +181,8 @@ void loop()
         finalPrintFlag = true;
       } else {
         digitalWrite(motor_pin, HIGH); // Run motor
+        digitalWrite(motor_unused_pin, LOW);
+        digitalWrite(MCU8, HIGH);
 
         regular_print("Threshold NOT passed.");
         regular_print(" Initial Value: "); regular_print(initialValue);
@@ -194,12 +202,15 @@ void loop()
   else if (switch_state == 1) // Switch OFF
   {
     digitalWrite(motor_pin, LOW);
+    digitalWrite(motor_unused_pin, LOW);
+    digitalWrite(MCU8, LOW);
 
     regular_print(" Analog Value: ");
     regular_print(filterValue);
     regular_println(" Switch: OFF ");
 
     // Extend linear actuator 
+    digitalWrite(MCU7, HIGH);
     digitalWrite(linear_actuator_IN1, HIGH);
     digitalWrite(linear_actuator_IN2, LOW);
 
@@ -207,7 +218,7 @@ void loop()
     calibrated = false;
     initialValue = -1;
     calibrationSum = 0;
-    finalPrintFlag = true;
+    //finalPrintFlag = true;
     val = 0;
   }
 }
