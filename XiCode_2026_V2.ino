@@ -16,6 +16,7 @@ DFRobot_ECPRO ec;
 #define fan_pin A5
 #define switch_pin 9 //to turn on car
 #define motor_pin 3
+#define motor_unused_pin 4
 #define linear_actuator_IN1 5
 #define linear_actuator_IN2 6
 
@@ -42,7 +43,7 @@ int flag = 1; // 0 = switch ON, 1 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = 20; //change based on stopping team measured threshold difference
+int threshold = 20; //change based on stopping team measured threshold difference (around 50-200 range)
 int val = 0;
 float conductivity;
 bool calibrated = false;
@@ -116,7 +117,7 @@ void updateAnalogArray(int arr[]) {
   tempArr[n-1] = arr[n-1]; //tempArr = arr
 
   filterValue = medianFilter(tempArr); // update filterValue - filters out noise
-  val = filterValue - initialValue;    //difference between new median value, and the mean of the first 10 readings.
+  val = filterValue - initialValue;
 
   conductivity = ec.getEC_us_cm(rawValue);
 }
@@ -128,10 +129,12 @@ void setup()
   pinMode(linear_actuator_IN2, OUTPUT);
   pinMode(fan_pin, OUTPUT);
   pinMode(motor_pin, OUTPUT);
+  pinMode(motor_unused_pin, OUTPUT);
   pinMode(switch_pin, INPUT_PULLUP);
   Serial.begin(115200);
 
   digitalWrite(fan_pin, HIGH); // Fan always on
+  digitalWrite(motor_unused_pin, LOW);
 }
 
 void loop()
@@ -204,6 +207,7 @@ void loop()
     calibrated = false;
     initialValue = -1;
     calibrationSum = 0;
+    finalPrintFlag = true;
     val = 0;
   }
 }
