@@ -1,8 +1,7 @@
 /*
-Code last updated: 3/1/2026
-  - updated calibration - threshold difference to be set by stopping team
-      - compares filterValue - initialValue to threshold difference
-      - now prints out difference for each reading
+Code last updated: 4/4/2026
+  - added motor driver sleep pins
+  - updated threshold
 ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗
 ❗❗❗ NOTICE TO EVERYONE: BEFORE UPLOADING UPDATED CODE FILES TO THE GOOGLE DRIVE, UPDATE THE CHANGELOG HERE ❗❗❗
 ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗
@@ -45,7 +44,7 @@ int flag = 1; // 0 = switch ON, 1 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = 10000; //change to 20 later
+int threshold = 20; //change to 20 later
 int val = 0;
 float conductivity;
 bool calibrated = false;
@@ -206,7 +205,7 @@ void loop()
     digitalWrite(MCU8, LOW);
 
     regular_print(" Analog Value: ");
-    regular_print(filterValue);
+    regular_print(rawValue);
     regular_println(" Switch: OFF ");
 
     // Extend linear actuator 
@@ -218,7 +217,7 @@ void loop()
     calibrated = false;
     initialValue = -1;
     calibrationSum = 0;
-    //finalPrintFlag = true;
+    finalPrintFlag = false;
     val = 0;
   }
 }
