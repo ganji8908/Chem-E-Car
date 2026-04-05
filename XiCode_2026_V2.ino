@@ -44,7 +44,7 @@ int flag = 1; // 0 = switch ON, 1 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = 20; //change to 20 later
+int threshold = 10000; //change to 20 later
 int val = 0;
 float conductivity;
 bool calibrated = false;
@@ -56,7 +56,7 @@ bool finalPrintFlag = false;
 
 void calibrateECScale() {  //probe
   Serial.println("Calibrating EC sensor...");
-
+  /*
   calibrationSum = 0;
   for (int i = 0; i < 10; i++) {
     calibrationReadings[i] = analogRead(EC_pin);
@@ -64,8 +64,10 @@ void calibrateECScale() {  //probe
     calibrationSum += calibrationReadings[i];
     delay(100);
   }
+  */
+  initialValue = analogRead(EC_pin);
   ec.setCalibration(1.36);
-  initialValue = calibrationSum / 10;
+  //initialValue = calibrationSum / 10;
   //threshold = initialValue - 250;
 
   Serial.print("Calibration complete. Initial value: ");
@@ -195,7 +197,7 @@ void loop()
         regular_print(" Time: "); regular_print(currentTime);
         regular_print('\n');
         csv_print(currentTime); csv_print(","); csv_print(filterValue); csv_print('\n');
-        delay(1000);
+        //delay(1000);
       }
   }
   else if (switch_state == 1) // Switch OFF
