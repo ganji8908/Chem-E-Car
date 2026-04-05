@@ -44,7 +44,7 @@ int flag = 1; // 0 = switch ON, 1 = switch OFF
 int rawValue;
 int filterValue;
 int initialValue = -1;
-int threshold = 10000; //change to 20 later
+int threshold = 20; //change to 20 later
 int val = 0;
 float conductivity;
 bool calibrated = false;
