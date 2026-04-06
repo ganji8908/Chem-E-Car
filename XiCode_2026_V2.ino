@@ -61,7 +61,7 @@ void calibrateECScale() {  //probe
   
   calibrationSum = 0;
   for (int i = 0; i < 10; i++) {
-    calibrationReadings[i] = analogRead(EC_pin);
+    calibrationReadings[i] = (uint32_t)analogRead(EC_pin)* 5000/1024;
     analogArray[i] = calibrationReadings[i];
     calibrationSum += calibrationReadings[i];
     //delay(100);
