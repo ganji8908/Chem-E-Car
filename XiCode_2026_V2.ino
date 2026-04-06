@@ -1,7 +1,9 @@
 /*
-Code last updated: 4/4/2026
-  - added motor driver sleep pins
-  - updated threshold
+Code last updated: 4/5/2026
+  - changed position of updateAnalogArray function to be after the probe is calibrated
+  - moved updating rawValue variable out of updateAnalogArray function into top of loop()
+    to make sure it still prints when switch is off
+  - moved val = filterValue - initialValue after calling updateAnalogArray in loop to make debugging easier
 ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗
 ❗❗❗ NOTICE TO EVERYONE: BEFORE UPLOADING UPDATED CODE FILES TO THE GOOGLE DRIVE, UPDATE THE CHANGELOG HERE ❗❗❗
 ❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗
@@ -115,12 +117,11 @@ void updateAnalogArray(int arr[]) {
     arr[i] = arr[i+1];    //each value moves one space left
     tempArr[i] = arr[i];  //tempArr = arr
   }
-  rawValue = (uint32_t)analogRead(EC_pin)* 5000/1024; //reads voltage from probe (adjusted to 5V range)
+
   arr[n-1] = rawValue; //last value = latest reading
   tempArr[n-1] = arr[n-1]; //tempArr = arr
 
   filterValue = medianFilter(tempArr); // update filterValue - filters out noise
-  val = filterValue - initialValue;
 
   conductivity = ec.getEC_us_cm(rawValue);
 }
@@ -144,14 +145,17 @@ void setup()
 
 void loop()
 {
+  rawValue = (uint32_t)analogRead(EC_pin)* 5000/1024; //reads voltage from probe (adjusted to 5V range)
   switch_state = digitalRead(switch_pin); // stores switch position
-  updateAnalogArray(analogArray); // analogRead(EC_pin) is in here
 
   if (switch_state == 0) // Switch ON
   { 
     if (!calibrated) {
       calibrateECScale();  // one-time calibration to find initialValue
     }
+
+    updateAnalogArray(analogArray); // analogRead(EC_pin) is in here
+    val = filterValue - initialValue;
     
     // Retract linear actuator 
     digitalWrite(MCU7, HIGH);
