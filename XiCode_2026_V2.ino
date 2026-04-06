@@ -58,18 +58,18 @@ bool finalPrintFlag = false;
 
 void calibrateECScale() {  //probe
   Serial.println("Calibrating EC sensor...");
-  /*
+  
   calibrationSum = 0;
   for (int i = 0; i < 10; i++) {
     calibrationReadings[i] = analogRead(EC_pin);
     analogArray[i] = calibrationReadings[i];
     calibrationSum += calibrationReadings[i];
-    delay(100);
+    //delay(100);
   }
-  */
-  initialValue = analogRead(EC_pin);
+  
+  //initialValue = analogRead(EC_pin);
   ec.setCalibration(1.36);
-  //initialValue = calibrationSum / 10;
+  initialValue = calibrationSum / 10;
   //threshold = initialValue - 250;
 
   Serial.print("Calibration complete. Initial value: ");
@@ -156,15 +156,16 @@ void loop()
 
     updateAnalogArray(analogArray); // analogRead(EC_pin) is in here
     val = filterValue - initialValue;
-    
-    // Retract linear actuator 
-    digitalWrite(MCU7, HIGH);
-    digitalWrite(linear_actuator_IN1, LOW);
-    digitalWrite(linear_actuator_IN2, HIGH);
+
     if (flag == 1) { 
       switchOnTime = millis();
       flag = 0;
     }
+    // Retract linear actuator 
+    digitalWrite(MCU7, HIGH);
+    digitalWrite(linear_actuator_IN1, LOW);
+    digitalWrite(linear_actuator_IN2, HIGH);
+    
 
     currentTime = millis() - switchOnTime;
     if (!finalPrintFlag)
