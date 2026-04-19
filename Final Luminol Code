@@ -1,0 +1,113 @@
+#include <Adafruit_AS7341.h>
+
+Adafruit_AS7341 as7341;
+
+#define motor_pin 3
+#define unused_pin 4
+#define pump_sleep 7     
+#define IN1 5
+#define IN2 6
+#define car_sleep 8  
+#define switch_pin 9 
+#define ASTEP_VAL 3999
+#define ATIME_VAL 100 
+
+unsigned int measured_intensity;
+unsigned int threshold_intensity = 0; 
+
+bool stoppingFlag = false;  
+bool previousDetected = false;
+
+int switch_state; 
+
+void setup()
+{
+  Serial.begin(115200);
+
+  pinMode(pump_sleep, OUTPUT); 
+  pinMode(car_sleep, OUTPUT); 
+  pinMode(motor_pin, OUTPUT);
+  pinMode(unused_pin, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(switch_pin, INPUT_PULLUP);
+  digitalWrite(pump_sleep, HIGH);
+  digitalWrite(car_sleep, HIGH);
+  digitalWrite(unused_pin, LOW);
+  digitalWrite(IN2, LOW);
+
+  if (!as7341.begin()) {
+    Serial.println("FATAL ERROR: Could not find AS7341 sensor! Check SDA/SCL wiring.");
+    while (1) { delay(10); }
+  }
+
+  as7341.setATIME(ATIME_VAL); 
+  as7341.setASTEP(ASTEP_VAL); 
+  as7341.setGain(AS7341_GAIN_512X); 
+  
+  Serial.println("Setup done! Sensor Online.");
+}
+
+void loop()
+{
+  switch_state = digitalRead(switch_pin); 
+  Serial.print("Switch: ");
+  Serial.println(switch_state);
+  Serial.print("Motor pin reading: "); Serial.println(digitalRead(motor_pin));
+
+  if (switch_state == 1) // Switch is OFF
+  {  
+    Serial.println("SWITCH OFF STATE ACTIVE");
+    digitalWrite(motor_pin, LOW);
+    digitalWrite(IN1, LOW);
+    // Reset linear actuator 
+    //digitalWrite(IN1, HIGH);
+    //digitalWrite(IN2, LOW);
+
+    stoppingFlag=false; 
+    previousDetected = false;
+  }
+
+
+    if (switch_state == 0) // Switch is ON
+    {
+      digitalWrite(IN1, HIGH);
+
+      if (stoppingFlag) return;
+
+      if (!as7341.readAllChannels()) return;
+
+      //measured_intensity = as7341.getChannel(AS7341_CHANNEL_480nm_F3);
+      measured_intensity = as7341.getChannel(AS7341_CHANNEL_445nm_F2);  //deep blue
+      Serial.print("Intensity: "); Serial.println(measured_intensity);
+
+      bool currentDetected = measured_intensity > threshold_intensity;
+
+      // 0 -> nonzero: start motor
+      Serial.print("(!previousDetected && currentDetected): ");
+      Serial.println((!previousDetected && currentDetected));
+      if (!previousDetected && currentDetected)
+      {
+        Serial.println("Signal detected. Starting motor.");
+        digitalWrite(motor_pin, HIGH);
+        Serial.print("Motor pin reading: "); Serial.println(digitalRead(motor_pin));
+      }
+
+      // nonzero -> 0: stop everything
+       Serial.print("(!previousDetected && currentDetected): ");
+      Serial.println((!previousDetected && currentDetected));
+      if (previousDetected && !currentDetected)
+      {
+        Serial.println("Signal lost. Stopping.");
+        digitalWrite(motor_pin, LOW);
+        digitalWrite(IN1, LOW); 
+        digitalWrite(pump_sleep, LOW);
+        //digitalWrite(car_sleep, LOW);
+        stoppingFlag = true;
+        Serial.println("Car should not restart:"); Serial.print(stoppingFlag); 
+        Serial.println("Motor pin reading: "); Serial.print(digitalRead(motor_pin));
+      }
+
+      previousDetected = currentDetected;
+    }
+}
