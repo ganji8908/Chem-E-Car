@@ -61,7 +61,6 @@ void calibrateECScale() {  //probe
   
   calibrationSum = 0;
   for (int i = 0; i < 10; i++) {
-    //calibrationReadings[i] = (uint32_t)analogRead(EC_pin)* 5000/1024;
     calibrationReadings[i] = (uint32_t)analogRead(EC_pin);
     analogArray[i] = calibrationReadings[i];
     calibrationSum += calibrationReadings[i];
@@ -146,8 +145,7 @@ void setup()
 
 void loop()
 {
-  //rawValue = (uint32_t)analogRead(EC_pin)* 5000/1024; //reads voltage from probe (adjusted to 5V range)
-  rawValue = (uint32_t)analogRead(EC_pin);
+  rawValue = (uint32_t)analogRead(EC_pin); //reads voltage from probe (adjusted to 5V range)
   switch_state = digitalRead(switch_pin); // stores switch position
 
   if (switch_state == 0) // Switch ON
@@ -204,7 +202,7 @@ void loop()
         regular_print(" Time: "); regular_print(currentTime);
         regular_print('\n');
         csv_print(currentTime); csv_print(","); csv_print(filterValue); csv_print('\n');
-        delay(100);
+        //delay(1000);
       }
   }
   else if (switch_state == 1) // Switch OFF
@@ -214,8 +212,7 @@ void loop()
     digitalWrite(MCU8, LOW);
 
     regular_print(" Analog Value: ");
-    regular_print(rawValue);
-    delay(100);
+    regular_print(analogRead(EC_pin));
     regular_println(" Switch: OFF ");
 
     // Extend linear actuator 
