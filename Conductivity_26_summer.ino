@@ -145,13 +145,13 @@ void loop() {
     }
   }
   else{ //if switch off
-    digitalWrite(motor_pin, LOW);
-    digitalWrite(motor_unused_pin, LOW);
+    digitalWrite(motor_pin_1, LOW);
+    digitalWrite(motor_pin_2, LOW);
     digitalWrite(MCU8, LOW);
 
     Serial.print(" Analog Value: "); Serial.print(rawValue);
     delay(100);
-    regular_println(" Switch: OFF ");
+    Serial.println(" Switch: OFF ");
 
     // Extend linear actuator 
     digitalWrite(MCU7, HIGH);
