@@ -76,7 +76,7 @@ void setup() {
   pinMode(MCU7,OUTPUT);
   pinMode(MCU8,OUTPUT);
 
-  Serial.begin(115200); //setup value from probe documentation
+  Serial.begin(115200); //baud rate
 
   digitalWrite(fan_pin, HIGH); // Fan always on
 }
