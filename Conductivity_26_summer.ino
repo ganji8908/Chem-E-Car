@@ -1,5 +1,5 @@
 /*
-  Conductivity code 2025-26 re-write
+  Conductivity code 2025-26 re-write (9/13/2026)
   Changes
     -  array size changed from 10 to 5
     - renamed motor pins
@@ -7,6 +7,7 @@
     - simplified median filter (removed method and added to updateAnalogArray)
     - changed all print statements to use Serial.print
     - added bool firstRun to calibrate when first turned on (and removed some if statements/flags from void loop())
+    - updated comments to be more detailed
 */
 
 #include <DFRobot_ECPRO.h>
@@ -33,12 +34,12 @@ int filterValue;
 int initialValue;
 int threshold = 20; //determined by stopping team
 float conductivity;
-int diff = 0; //store difference in analog value from initial value (filterValue - initialValue)
-int analogArray[5]; //array to store analog readings (changed from storing 10 to 5 values)
+int diff = 0; //store difference in analog value from initial value (filterValue - initialValue) to compare to threshold value
+int analogArray[5]; //array to store analog readings (changed from storing 10 to 5 values to speed up stopping process, continue experimenting with this)
 int n = 5;
 bool firstRun = true;
 
-void insertionSort(int arr[]) { 
+void insertionSort(int arr[]) { //sorts 5 value array read by probe
   for (int i = 1; i < n; i++) {
     int temp = arr[i];
 
@@ -51,7 +52,7 @@ void insertionSort(int arr[]) {
   }
 }
 
-void updateAnalogArray(int arr[]){
+void updateAnalogArray(int arr[]){ //updates array with raw value read by probe
   for (int i = 0; i < n - 1; i++) {
     arr[i] = arr[i+1];   
   }
@@ -75,7 +76,7 @@ void setup() {
   pinMode(MCU7,OUTPUT);
   pinMode(MCU8,OUTPUT);
 
-  Serial.begin(115200);
+  Serial.begin(115200); //setup value from probe documentation
 
   digitalWrite(fan_pin, HIGH); // Fan always on
 }
@@ -84,8 +85,8 @@ void loop() {
   rawValue = (uint32_t)analogRead(EC_pin);
   switch_state = digitalRead(switch_pin);
   if (switch_state == 0) { // switch ON
-    updateAnalogArray(analogArray); // analogRead(EC_pin) is in here
-    diff = filterValue - initialValue;
+    updateAnalogArray(analogArray); // analogRead(EC_pin) is in here as variable rawValue
+    diff = filterValue - initialValue; 
     if (firstRun)
     {
        // calibration
