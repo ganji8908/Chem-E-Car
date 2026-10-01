@@ -128,7 +128,7 @@ void loop() {
       Serial.print(" Analog Value: "); Serial.println(rawValue);
       Serial.print(" Filter Value: "); Serial.println(filterValue);
       Serial.print(" Conductivity: "); Serial.println(conductivity);
-      Serial.print("Temperature: "); Serial.println(temp)
+      Serial.print("Temperature: "); Serial.println(temp);
       Serial.print("  Switch: ON  ");
       Serial.print(" Time: "); Serial.println(currentTime);
       delay(100);
@@ -146,7 +146,7 @@ void loop() {
       Serial.print(" Analog Value: "); Serial.println(rawValue);
       Serial.print(" Filter Value: "); Serial.println(filterValue);
       Serial.print(" Conductivity: "); Serial.println(conductivity);
-      Serial.print("Temperature: "); Serial.println(temp)
+      Serial.print("Temperature: "); Serial.println(temp);
       Serial.print("  Switch: ON  ");
       Serial.print("  Final Time: "); Serial.println(finalTime);
     }
