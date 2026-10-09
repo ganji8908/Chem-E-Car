@@ -97,7 +97,7 @@ void loop() {
 
   
   EC_Voltage = (uint32_t)analogRead(EC_pin) * 5000 / 1024; // fixed 10/6
-  TE_Voltage = (uint32_t)analogRead(TE_PIN) * 3300 / 1024; 
+  TE_Voltage = (uint32_t)analogRead(TE_PIN) * 5000 / 1024; 
   
 
   temp = ecpt.convVoltagetoTemperature_C((float)TE_Voltage/1000);
