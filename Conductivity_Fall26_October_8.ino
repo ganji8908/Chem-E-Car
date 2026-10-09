@@ -41,7 +41,7 @@ unsigned long currentTime;
 unsigned long finalTime = 0;
 int filterValue;
 int initialValue;
-int threshold = 20; //determined by stopping team
+int threshold = 5000; //determined by stopping team
 float conductivity;
 int diff = 0; //store difference in analog value from initial value (filterValue - initialValue) to compare to threshold value
 int analogArray[10]; //array to store analog readings (changed back to 10 from 5 to reduce fluctuation, experiment with this)
@@ -97,7 +97,7 @@ void loop() {
 
   
   EC_Voltage = (uint32_t)analogRead(EC_pin) * 5000 / 1024; // fixed 10/6
-  TE_Voltage = (uint32_t)analogRead(TE_PIN) * 5000 / 1024; 
+  TE_Voltage = (uint32_t)analogRead(TE_PIN) * 3300 / 1024; 
   
 
   temp = ecpt.convVoltagetoTemperature_C((float)TE_Voltage/1000);
@@ -142,7 +142,7 @@ void loop() {
       Serial.print("  Voltage Difference: "); Serial.println(diff); 
       Serial.print(" Analog Value: "); Serial.println(EC_Voltage);
       Serial.print(" Filter Value: "); Serial.println(filterValue);
-      Serial.print(" Conductivity: "); Serial.println(conductivity);
+      Serial.print(" Conductivity: "); Serial.println(String(conductivity));
       Serial.print("Temperature: "); Serial.println(temp);
       Serial.print("  Switch: ON  ");
       Serial.print(" Time: "); Serial.println(currentTime);
@@ -160,7 +160,7 @@ void loop() {
       Serial.print("  Voltage Difference: "); Serial.println(diff); 
       Serial.print(" Analog Value: "); Serial.println(EC_Voltage);
       Serial.print(" Filter Value: "); Serial.println(filterValue);
-      Serial.print(" Conductivity: "); Serial.println(conductivity);
+      Serial.print(" Conductivity: "); Serial.println(String(conductivity));
       Serial.print("Temperature: "); Serial.println(temp);
       Serial.print("  Switch: ON  ");
       Serial.print("  Final Time: "); Serial.println(finalTime);
