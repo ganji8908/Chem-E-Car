@@ -1,7 +1,9 @@
 /*
+  WiFi setup documentation: https://docs.google.com/document/d/1q7QNnsK1apt0kHWgb7JyAk8NXon-HL5XuM47ss_MBro/edit?usp=sharing
   Conductivity code 2025-26 re-write (10/8/2026)
   Changes
     11/03/2026:
+    - changed pin numbers and added telenetstream statements for wifi connection debugging (11/5/2026)
     - added lines to setup esp32 OTA wifi connection
     - switched ADC conversion factor to 3300/4095 (recommended by Claude)
     - changed serial.print to TelnetStream (so we can monitor on Terminal)
@@ -23,7 +25,7 @@ DFRobot_ECPRO ec;
 DFRobot_ECPRO_PT1000 ecpt;
 
 //pin definitions
-#define EC_pin 1
+#define EC_pin 8
 #define TE_PIN 2
 #define fan_pin 18     //stirring mechanism
 #define switch_pin 4   //to turn on car
@@ -83,10 +85,13 @@ void updateAnalogArray(int arr[]) {  //updates array with raw value read by prob
 void setup() {
   Serial.begin(115200);
   WiFi.mode(WIFI_AP);
-  WiFi.softAP("car-ota", "password123", 6);  // channel 6, pick the quietest of 1/6/11
+  WiFi.softAP("esp-ota", "password123", 6);  // channel 6, pick the quietest of 1/6/11
+  delay(500); // delay is fine here 
+  TelnetStream.println("AP IP: ");
+  TelnetStream.println(WiFi.softAPIP());
 
 
-  ArduinoOTA.setHostname("esp32s3-car");
+  ArduinoOTA.setHostname("esp32s3-chemecar");
   ArduinoOTA.setPassword("ota1234");
   ArduinoOTA.begin();
 
@@ -105,6 +110,7 @@ void setup() {
   ec.setCalibration(1.372007);  // calibrated using DFRobot code on 10/6
 
   digitalWrite(fan_pin, HIGH);  // Fan always on
+  TelnetStream.println("setup done");
 }
 
 
@@ -167,7 +173,9 @@ void loop() {
         TelnetStream.print("  Switch: ON  ");
         TelnetStream.print(" Time: ");
         TelnetStream.println(currentTime);
+        TelnetStream.println("_____________________");
         lastReport = millis();
+    
       }
     } else {
       digitalWrite(motor_pin_1, LOW);  // Stop motor
@@ -194,6 +202,7 @@ void loop() {
         TelnetStream.print("  Switch: ON  ");
         TelnetStream.print("  Final Time: ");
         TelnetStream.println(finalTime);
+        TelnetStream.println("_____________________");
         lastReport = millis();
       }
     }
